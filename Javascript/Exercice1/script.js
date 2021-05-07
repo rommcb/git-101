@@ -1,11 +1,47 @@
 
 var parentDiv = document.getElementById("container");
-console.log(parentDiv);
 
-function Grille()
+function Case(nombre, ticked = false)
+    {
+    this.nombre=nombre; 
+    this.ticked=ticked;
+    // this.td crée via la méthode CreateTable
+    }
+
+Case.prototype.TickCase = function (myCase)
+    {
+     var tab =grille.VerifierNombreTicked();
+    grille.effacerDiv();
+     if (this.ticked == false) {
+        
+        if(tab.length==6) return;
+        
+
+        myCase.td.setAttribute("style","font-weight:bold;");
+        myCase.ticked = true;
+        console.log(myCase);
+        
+        tab =grille.VerifierNombreTicked();
+        if(tab.length==6)
+        {
+        var div = document.getElementById("resultat");
+        var p = div.appendChild(document.createElement("P"));
+        p.appendChild(document.createTextNode(tab))
+        }
+        
+      } 
+      else {
+        myCase.td.setAttribute("style","font-weight:normal;");
+        myCase.ticked = false;
+        console.log(myCase);
+      }
+      
+    };
+
+function Grille() //Créer l'objet Grille
   {
     this.tableau = []; // this. pour créer une propriété. Attention! différent d'une variable.
-    this.CreateTable(); 
+    this.CreateTable(); //Appel de la fonction CreateTable
   };
 
 Grille.prototype.CreateTable = function ()
@@ -22,49 +58,50 @@ Grille.prototype.CreateTable = function ()
           this.tableau[this.tableau.length] = myCase; // this.grille.length > si le tableau est vide = 0 , donc ajoute à l'index 0, etc.
           myCase.td = document.createElement("td"); // ajout d'une propriété this.td à notre nouvel objet "Case"
           myCase.td.appendChild(document.createTextNode(myCase.nombre));
-          tr.appendChild(myCase.td);
+          tr.appendChild(myCase.td);  
+       
+          myCase.td.onclick=function (myCase) 
+          { 
+            return function () {myCase.TickCase(myCase)};
+          }(myCase);
+          
         };
       };
   };
-
 
   Grille.prototype.DisplayTable = function ()
     {
        parentDiv.appendChild(this.table);
     };
 
+  Grille.prototype.VerifierNombreTicked=function()
+  {
+    var nbCaseTicked=[];
 
-var grille = new Grille();
-
-grille.DisplayTable();
-
-
-// for (i = 0; i < 49; i++) {
-// var case1 = new Case(nombre);
-// }
-
-function Case(nombre, ticked = false)
+    
+    for (i=0;i<grille.tableau.length;i++)
     {
-    this.nombre=nombre; 
-    this.ticked=ticked;
-    // this.td crée via la méthode CreateTable
+      if(grille.tableau[i].ticked==true)
+        {
+          nbCaseTicked.push(grille.tableau[i].nombre);
+        }
     }
 
+    return nbCaseTicked;
+  };
 
-
-Case.prototype.TickCase = function ()
+  Grille.prototype.effacerDiv=function() {
+    if(div==null) return;
+    
+    if(grille.tableau.length<6)
     {
-      if (this.ticked == false) {
-        return this.ticked = true;
-      } else {
-        return this.ticked = false;
-      }
-    };
+      var div = document.getElementById("resultat");
+      while (div.firstChild) div.removeChild(div.firstChild);
+    }
 
+};
 
+    var grille = new Grille();
+    grille.DisplayTable();
 
-// console.log(case1.TickCase());
-
-
-
-//.innerHTML = caseString;
+    //document.querySelectorAll("tr").addEventListener("click",this.TickCase);
